@@ -12,11 +12,13 @@ class UsersRoute {
     this.router.get('/users', this.getUsers.bind(this));
   }
 
-  getUsers(req: Request, res: Response) {
-    usersService
-      .getUsers()
-      .then((response) => res.status(200).json(response))
-      .catch((err) => res.status(500).json(err));
+  async getUsers(req: Request, res: Response) {
+    try {
+      const response = await usersService.getUsers();
+      res.status(200).json(response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
   }
 }
 

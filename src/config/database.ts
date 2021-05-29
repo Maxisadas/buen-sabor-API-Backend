@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const getConnection = async () => {
-  console.log(process.env.DB_USERNAME, process.env.DB_PASS);
   const connection = await createConnection({
     type: 'mysql',
     host: process.env.DB_HOST,
