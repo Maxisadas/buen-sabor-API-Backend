@@ -19,4 +19,4 @@ app.use(userRoutes);
 getConnection();
 
 app.listen(3000);
-console.log('Servidor corriendo en el puerto 3000');
+console.log('Servidor corriendo en el puerto 3000 en rama Agustina');
