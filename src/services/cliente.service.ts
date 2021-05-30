@@ -6,6 +6,8 @@ class ClienteService {
     const clientes = await getRepository(Cliente).find();
     return clientes;
   }
+
+  //Hacer el editarClientes donde debemos editar la informacion del cliente.
 }
 
 export default new ClienteService();

@@ -10,4 +10,8 @@ export class User {
   constrasena: string;
   @Column()
   rolUsuario: string;
+  @Column()
+  fechaCreacion: Date;
+  @Column({ nullable: true, default: null })
+  fechaBaja: Date;
 }

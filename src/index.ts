@@ -5,6 +5,7 @@ import 'reflect-metadata';
 import userRoutes from './routes/users.routes';
 import getConnection from './config/database';
 import clientesRoutes from './routes/clientes.routes';
+import authRoutes from './routes/auth.routes';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.json()); // Para obtener los datos externos en formato JSON
 // routes
 app.use(userRoutes);
 app.use(clientesRoutes);
+app.use(authRoutes);
 // init database
 getConnection();
 
