@@ -8,6 +8,7 @@ class ClienteService {
   }
 
   //Hacer el editarClientes donde debemos editar la informacion del cliente.
+  // Ten en cuenta que SI el usuario cambia el email entonces debes cambiar el nombre de usuario al email nuevo. if(clienteEncontrado.usuario.email !== cliente.email){}
 }
 
 export default new ClienteService();
