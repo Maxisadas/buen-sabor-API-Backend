@@ -1,17 +1,13 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class User {
+export class Domicilio {
   @PrimaryGeneratedColumn()
   id: number;
   @Column({ nullable: true, default: null })
-  nombreUsuario: string;
+  calle: string;
   @Column({ nullable: true, default: null })
-  constrasena: string;
+  numero: number;
   @Column({ nullable: true, default: null })
-  rolUsuario: string;
-  @Column({ nullable: true, default: null })
-  fechaCreacion: Date;
-  @Column({ nullable: true, default: null })
-  fechaBaja: Date;
+  localidad: string;
 }

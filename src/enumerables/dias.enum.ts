@@ -1,0 +1,5 @@
+const enum DIAS_LABORALES {
+  ENTRE_SEMANA = 'ENTRE_SEMANA',
+  FINES_SEMANA = 'FINES_SEMANA',
+}
+export default DIAS_LABORALES;

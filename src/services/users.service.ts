@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { getRepository } from 'typeorm';
 import { Cliente } from '../entity/cliente';
+import { Domicilio } from '../entity/domicilio';
 import { User } from '../entity/user';
 import RolUsuario from '../enumerables/roles.enum';
 
@@ -38,6 +39,11 @@ class UserService {
         nuevoCliente.usuario = nuevoUsuario;
         nuevoCliente.fechaCreacion = new Date();
         await getRepository(Cliente).save(nuevoCliente);
+        const domicilio = new Domicilio();
+        domicilio.calle = usuario.calle;
+        domicilio.localidad = usuario.localidad;
+        domicilio.numero = usuario.numero;
+        await getRepository(Domicilio).save(domicilio);
       }
     } catch (error) {
       throw error;

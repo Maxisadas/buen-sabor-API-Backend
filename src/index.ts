@@ -6,6 +6,7 @@ import userRoutes from './routes/users.routes';
 import getConnection from './config/database';
 import clientesRoutes from './routes/clientes.routes';
 import authRoutes from './routes/auth.routes';
+import configuracionRoutes from './routes/configuracion.routes';
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json()); // Para obtener los datos externos en formato JSON
 app.use(userRoutes);
 app.use(clientesRoutes);
 app.use(authRoutes);
+app.use(configuracionRoutes);
 // init database
 getConnection();
 
