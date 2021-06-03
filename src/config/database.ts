@@ -1,5 +1,6 @@
 import { createConnection } from 'typeorm';
 import dotenv from 'dotenv';
+import carga_inicial_datos from '../scripts';
 
 dotenv.config();
 
@@ -16,6 +17,8 @@ const getConnection = async () => {
     logger: 'debug',
   });
   console.log('Database ON');
+  // init script de carga.
+  await carga_inicial_datos();
   return connection;
 };
 

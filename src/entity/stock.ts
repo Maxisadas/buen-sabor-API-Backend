@@ -3,11 +3,13 @@ import { ArticuloInsumo } from './articuloInsumo';
 @Entity()
 export class Stock {
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
   @Column({ nullable: true, default: null })
-  cantidad: number;
+  cantidad?: number;
   @Column({ nullable: true, default: null })
-  stockMinimo: number;
+  stockMinimo?: number;
+  @Column({ nullable: true, default: null })
+  unidadMedida?: string;
   @OneToMany(() => ArticuloInsumo, (articulo) => articulo.stock)
-  articulos: ArticuloInsumo[];
+  articulos?: ArticuloInsumo[];
 }

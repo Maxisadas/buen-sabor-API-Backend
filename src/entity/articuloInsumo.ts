@@ -1,30 +1,30 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
-import { ArticuloManufacturado } from './articuloManufacturado';
+import { ArticuloManufacturadoDetalle } from './articuloManufacturadoDetalle';
 import { DetallePedido } from './detalle-pedido';
 import { RubroArticulo } from './rubroArticulo';
 import { Stock } from './stock';
 @Entity()
 export class ArticuloInsumo {
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
   @Column({ nullable: true, default: null })
-  denominacion: string;
+  denominacion?: string;
   @Column({ nullable: true, default: null })
-  esInsumo: boolean;
+  esInsumo?: boolean;
   @Column({ nullable: true, default: null })
-  precioCompra: number;
+  precioCompra?: number;
   @Column({ nullable: true, default: null })
-  precioVenta: number;
+  precioVenta?: number;
   @Column({ nullable: true, default: null })
-  fechaCreacion: Date;
+  fechaCreacion?: Date;
   @Column({ nullable: true, default: null })
-  fechaBaja: Date;
-  @ManyToOne(() => Stock, (stock) => stock.articulos)
-  stock: Stock;
+  fechaBaja?: Date;
+  @ManyToOne(() => Stock, (stock) => stock.articulos, { cascade: true })
+  stock?: Stock;
   @ManyToOne(() => RubroArticulo, (rubro) => rubro.articulos)
-  rubro: RubroArticulo;
+  rubro?: RubroArticulo;
   @OneToMany(() => DetallePedido, (detallePedido) => detallePedido.articulo)
-  detallePedidos: DetallePedido[];
-  @ManyToOne(() => ArticuloManufacturado, (articuloManufacturado) => articuloManufacturado.articulosInsumo)
-  articuloManufacturado: ArticuloManufacturado;
+  detallePedidos?: DetallePedido[];
+  @OneToMany(() => ArticuloManufacturadoDetalle, (articuloManufacturadoDetalle) => articuloManufacturadoDetalle.articuloInsumo)
+  articulosManufacturadoDetalle?: ArticuloManufacturadoDetalle[];
 }

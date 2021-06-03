@@ -1,25 +1,26 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
 import { ArticuloInsumo } from './articuloInsumo';
+import { ArticuloManufacturadoDetalle } from './articuloManufacturadoDetalle';
 import { DetallePedido } from './detalle-pedido';
 
 @Entity()
 export class ArticuloManufacturado {
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
   @Column({ nullable: true, default: null })
-  denominacion: string;
+  denominacion?: string;
   @Column({ nullable: true, default: null })
-  tiempoEstimadoCocina: number;
+  tiempoEstimadoCocina?: number;
   @Column({ nullable: true, default: null })
-  precioVenta: number;
+  precioVenta?: number;
   @Column({ nullable: true, default: null })
-  imagen: string;
+  imagen?: string;
   @Column({ nullable: true, default: null })
-  fechaCreacion: Date;
+  fechaCreacion?: Date;
   @Column({ nullable: true, default: null })
-  fechaBaja: Date;
+  fechaBaja?: Date;
   @OneToMany(() => DetallePedido, (detallePedido) => detallePedido.articuloManufacturado)
-  detallePedidos: DetallePedido[];
-  @OneToMany(() => ArticuloInsumo, (articuloInsumo) => articuloInsumo.articuloManufacturado)
-  articulosInsumo: ArticuloInsumo[];
+  detallePedidos?: DetallePedido[] | undefined ;
+  @OneToMany(() => ArticuloManufacturadoDetalle, (articuloManufacturadoDetalle) => articuloManufacturadoDetalle.articuloManufacturado, {cascade: true})
+  articulosManufacturadoDetalle?: ArticuloManufacturadoDetalle[] | undefined;
 }

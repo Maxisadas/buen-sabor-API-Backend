@@ -17,7 +17,7 @@ export class Pedido {
   @OneToMany(() => DetallePedido, (detallePedido) => detallePedido.pedido)
   detallePedidos: DetallePedido[];
   @ManyToOne(() => Cliente, (cliente) => cliente.pedidos)
-  cliente?: Cliente;
+  cliente?: Cliente | undefined;
   @ManyToOne(() => EstadoPedido, (estadoPedido) => estadoPedido.pedidos)
-  estado?: EstadoPedido;
+  estado?: EstadoPedido | undefined;
 }
