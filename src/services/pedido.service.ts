@@ -21,7 +21,7 @@ class PedidoService {
     const pendiente = await getRepository(EstadoPedido).findOne({where:{nombre:'PENDIENTE'}})
     pedidoEncontrado.estado = pendiente;
     if(informacionPago.tipoEnvio === TiposEnvios.DELIVERY){
-      pedidoEncontrado.horaEstimadaFin = pedidoEncontrado.horaEstimadaFin + 10; // Por la demora del delivery
+      pedidoEncontrado.horaEstimadaFin = pedidoEncontrado.horaEstimadaFin + 0.10; // Por la demora del delivery
     }
     if(informacionPago.tipoEnvio === TiposEnvios.RETIRO_LOCAL){
       pedidoEncontrado.total = pedidoEncontrado.total - (pedidoEncontrado.total * 0.10) // Descuento del 10% si retira el pedido en el local
