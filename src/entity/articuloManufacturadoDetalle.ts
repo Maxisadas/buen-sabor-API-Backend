@@ -11,8 +11,8 @@ export class ArticuloManufacturadoDetalle {
   cantidad?: number;
   @Column({ nullable: true, default: null })
   unidadMedida?: string;
-  @ManyToOne(() => ArticuloManufacturado, (articuloManufacturado) => articuloManufacturado.articulosManufacturadoDetalle)
+  @ManyToOne(() => ArticuloManufacturado, (articuloManufacturado) => articuloManufacturado.articulosManufacturadoDetalle,{eager:true})
   articuloManufacturado?: ArticuloManufacturado | undefined;
-  @ManyToOne(() => ArticuloInsumo, (articuloInsumo) => articuloInsumo.articulosManufacturadoDetalle)
+  @ManyToOne(() => ArticuloInsumo, (articuloInsumo) => articuloInsumo.articulosManufacturadoDetalle,{eager:true})
   articuloInsumo?: ArticuloInsumo | undefined;
 }

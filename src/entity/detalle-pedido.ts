@@ -14,6 +14,6 @@ export class DetallePedido {
   articulo: ArticuloInsumo;
   @ManyToOne(() => ArticuloManufacturado, (articuloManufacturado) => articuloManufacturado.detallePedidos)
   articuloManufacturado: ArticuloManufacturado;
-  @ManyToOne(() => Pedido, (pedido) => pedido.detallePedidos)
+  @ManyToOne(() => Pedido, (pedido) => pedido.detallePedidos,{eager:true})
   pedido: Pedido;
 }

@@ -18,6 +18,6 @@ export class Pedido {
   detallePedidos: DetallePedido[];
   @ManyToOne(() => Cliente, (cliente) => cliente.pedidos)
   cliente?: Cliente | undefined;
-  @ManyToOne(() => EstadoPedido, (estadoPedido) => estadoPedido.pedidos)
+  @ManyToOne(() => EstadoPedido, (estadoPedido) => estadoPedido.pedidos,{eager:true,cascade:true})
   estado?: EstadoPedido | undefined;
 }

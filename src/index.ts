@@ -7,6 +7,7 @@ import getConnection from './config/database';
 import clientesRoutes from './routes/clientes.routes';
 import authRoutes from './routes/auth.routes';
 import configuracionRoutes from './routes/configuracion.routes';
+import pedidoRoutes from './routes/pedido.routes';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(userRoutes);
 app.use(clientesRoutes);
 app.use(authRoutes);
 app.use(configuracionRoutes);
+app.use(pedidoRoutes);
 // init database
 getConnection();
 

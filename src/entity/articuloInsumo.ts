@@ -19,7 +19,7 @@ export class ArticuloInsumo {
   fechaCreacion?: Date;
   @Column({ nullable: true, default: null })
   fechaBaja?: Date;
-  @ManyToOne(() => Stock, (stock) => stock.articulos, { cascade: true })
+  @ManyToOne(() => Stock, (stock) => stock.articulos, { cascade: true,eager:true })
   stock?: Stock;
   @ManyToOne(() => RubroArticulo, (rubro) => rubro.articulos)
   rubro?: RubroArticulo;
