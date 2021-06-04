@@ -10,9 +10,9 @@ export class DetallePedido {
   cantidad: number;
   @Column({ nullable: true, default: null })
   subtotal: number;
-  @ManyToOne(() => ArticuloInsumo, (articulo) => articulo.detallePedidos)
+  @ManyToOne(() => ArticuloInsumo, (articulo) => articulo.detallePedidos,{eager:true})
   articulo: ArticuloInsumo;
-  @ManyToOne(() => ArticuloManufacturado, (articuloManufacturado) => articuloManufacturado.detallePedidos)
+  @ManyToOne(() => ArticuloManufacturado, (articuloManufacturado) => articuloManufacturado.detallePedidos,{eager:true})
   articuloManufacturado: ArticuloManufacturado;
   @ManyToOne(() => Pedido, (pedido) => pedido.detallePedidos,{eager:true})
   pedido: Pedido;
