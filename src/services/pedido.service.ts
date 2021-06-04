@@ -223,8 +223,7 @@ class PedidoService {
         if(!articuloEncontrado){
           return {mensaje:'El articulo no existe en nuestro sistema'};
         }
-        const detallePedido:any = await getRepository(DetallePedido).findOne({where:{articuloManufacturado:articuloEncontrado}});
-        detallePedido.cantidad = detallePedido.cantidad - carrito.articulo.cantidad;
+        const detallePedido:any = await getRepository(DetallePedido).findOne({where:{articuloManufacturado:articuloEncontrado,pedido:pedidoExistente}});
         if(!detallePedido){
           return {mensaje:"Usted no ha agregado este articulo al carrito" ,status:400};
         }
@@ -233,8 +232,8 @@ class PedidoService {
           return {mensaje:`Existe menos cantidad de productos en el carrito, por favor ingrese la cantidad hasta un maximo de: ${detallePedido.cantidad} unidades`,status:400};
         }
         // Una vez encontrado el detalle, devemos revisar la cantidad, si este llega a 0 o menor , se debe eliminar. Sino solo actualizar.
-        detallePedido.cantidad = detallePedido.cantidad - carrito.articulo.cantidad;
-        if(detallePedido.cantidad <= 0){
+        const cantidadActualizada = await this.decrementarCantidad(pedidoExistente,detallePedido,carrito)
+        if(cantidadActualizada <= 0){
           await getRepository(DetallePedido).delete(detallePedido);
         }
         return;
@@ -264,14 +263,15 @@ class PedidoService {
     // Si se trata de un articulo que no es insumo (EJ: Cocacola)
     if(pedidoDetalle.articulo){
       pedidoDetalle.subtotal = pedidoDetalle.subtotal - pedidoDetalle.articulo.precioVenta * carrito.articulo.cantidad;
+      pedido.total = pedido.total - pedidoDetalle.articulo.precioVenta * carrito.articulo.cantidad;
     }else{
       // si se trata de un articulo manufacturado (Ej:pizza)
       pedidoDetalle.subtotal = pedidoDetalle.subtotal - pedidoDetalle.articuloManufacturado.precioVenta * carrito.articulo.cantidad;
       pedido.horaEstimadaFin = pedido.horaEstimadaFin - pedidoDetalle.articuloManufacturado.tiempoEstimadoCocina
+      pedido.total = pedido.total - pedidoDetalle.articuloManufacturado.precioVenta * carrito.articulo.cantidad;
     }
     pedidoDetalle.cantidad = pedidoDetalle.cantidad - carrito.articulo.cantidad;
     await getRepository(DetallePedido).save(pedidoDetalle);
-    pedido.total = pedido.total - pedidoDetalle.subtotal;
     await getRepository(Pedido).save(pedido);
     return pedidoDetalle.cantidad;
   }
