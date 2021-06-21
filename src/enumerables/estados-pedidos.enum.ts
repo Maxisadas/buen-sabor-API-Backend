@@ -1,0 +1,11 @@
+const enum EstadosPedido {
+  CREADO = 'CREADO',
+  APROBADO = 'APROBADO',
+  PENDIENTE = 'PENDIENTE',
+  TERMINADO = 'TERMINADO',
+  EN_DELIVERY = 'EN DELIVERY',
+  FACTURADO = 'FACTURADO',
+  RECHAZADO = 'RECHAZADO',
+}
+
+export default EstadosPedido;

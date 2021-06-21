@@ -28,6 +28,9 @@ const carga_inicial_datos = async () => {
       {
         nombre: 'FACTURADO',
       },
+      {
+        nombre: 'RECHAZADO',
+      },
     ];
     await getRepository(EstadoPedido).save(estados);
   }

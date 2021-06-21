@@ -3,10 +3,15 @@ import { ArticuloInsumo } from '../entity/articuloInsumo';
 import { ArticuloManufacturado } from '../entity/articuloManufacturado';
 import { ArticuloManufacturadoDetalle } from '../entity/articuloManufacturadoDetalle';
 import { Cliente } from '../entity/cliente';
+import { DetalleFactura } from '../entity/detalle-factura';
 import { DetallePedido } from '../entity/detalle-pedido';
 import { EstadoPedido } from '../entity/estadoPedido';
+import { Factura } from '../entity/factura';
+import { MercadoPagoDatos } from '../entity/mercadoPagoDatos';
 import { Pedido } from '../entity/pedido';
 import { User } from '../entity/user';
+import EstadosPedido from '../enumerables/estados-pedidos.enum';
+import FormaPago from '../enumerables/formaPago.enum';
 import TiposEnvios from '../enumerables/tiposEnvios.enum';
 
 class PedidoService {
@@ -305,6 +310,175 @@ class PedidoService {
     await getRepository(DetallePedido).save(pedidoDetalle);
     await getRepository(Pedido).save(pedido);
     return pedidoDetalle.cantidad;
+  }
+
+  async aprobarOrechazarPedido(nroPedido: number, estado: EstadosPedido) {
+    const pendiente = await getRepository(EstadoPedido).findOne({ where: { nombre: EstadosPedido.PENDIENTE } });
+    const pedidoEncontrado = await getRepository(Pedido).findOne(nroPedido, { where: { estado: pendiente } });
+    if (!pedidoEncontrado) {
+      return { mensaje: 'El pedido no se ha encontrado en nuestro sistema', status: 400 };
+    }
+    const detallesPedido = await getRepository(DetallePedido).find({ where: { pedido: pedidoEncontrado } });
+    if (detallesPedido.length <= 0) {
+      return { mensaje: 'El pedido no contiene articulos', status: 400 };
+    }
+    this.cambiarEstadoPedido(pedidoEncontrado, estado);
+  }
+
+  async finalizarPedido(nroPedido: number, estado: EstadosPedido) {
+    const aprobado = await getRepository(EstadoPedido).findOne({ where: { nombre: EstadosPedido.APROBADO } });
+    const pedidoEncontrado = await getRepository(Pedido).findOne(nroPedido, { where: { estado: aprobado } });
+    if (!pedidoEncontrado) {
+      return { mensaje: 'El pedido no se ha encontrado en nuestro sistema', status: 400 };
+    }
+    const detallesPedido = await getRepository(DetallePedido).find({ where: { pedido: pedidoEncontrado } });
+    if (detallesPedido.length <= 0) {
+      return { mensaje: 'El pedido no contiene articulos', status: 400 };
+    }
+    this.cambiarEstadoPedido(pedidoEncontrado, estado);
+  }
+
+  async enviarDelivery(nroPedido: number, estado: EstadosPedido) {
+    const terminado = await getRepository(EstadoPedido).findOne({ where: { nombre: EstadosPedido.TERMINADO } });
+    const pedidoEncontrado = await getRepository(Pedido).findOne(nroPedido, {
+      where: { estado: terminado, tipoEnvio: TiposEnvios.DELIVERY },
+    });
+    if (!pedidoEncontrado) {
+      return { mensaje: 'El pedido no se ha encontrado en nuestro sistema', status: 400 };
+    }
+    const detallesPedido = await getRepository(DetallePedido).find({ where: { pedido: pedidoEncontrado } });
+    if (detallesPedido.length <= 0) {
+      return { mensaje: 'El pedido no contiene articulos', status: 400 };
+    }
+    this.cambiarEstadoPedido(pedidoEncontrado, estado);
+  }
+
+  async facturarPedido(nroPedido: number, estado: EstadosPedido) {
+    const terminado = await getRepository(EstadoPedido).findOne({ where: { nombre: EstadosPedido.TERMINADO } });
+    const delivery = await getRepository(EstadoPedido).findOne({ where: { nombre: EstadosPedido.EN_DELIVERY } });
+    const pedidoEncontrado = await getRepository(Pedido).findOne(nroPedido, {
+      where: { estado: terminado || delivery },
+    });
+    if (!pedidoEncontrado) {
+      return { mensaje: 'El pedido no se ha encontrado en nuestro sistema', status: 400 };
+    }
+    const detallesPedido = await getRepository(DetallePedido).find({ where: { pedido: pedidoEncontrado } });
+    if (detallesPedido.length <= 0) {
+      return { mensaje: 'El pedido no contiene articulos', status: 400 };
+    }
+    //Procedemos a facturas las compras
+    const factura = new Factura();
+    factura.fechaFacturacion = new Date();
+    await getRepository(Factura).save(factura); //Instanciamos la factura en la base de datos.
+    factura.formaPago = pedidoEncontrado.tipoEnvio == TiposEnvios.DELIVERY ? FormaPago.MERCADOPAGO : FormaPago.EFECTIVO;
+    factura.pedido = pedidoEncontrado;
+    factura.nroTarjeta = await this.obtenerNroTarjeta(pedidoEncontrado);
+    factura.totalVenta = await this.calcularTotalVentas(pedidoEncontrado, factura);
+    factura.totalCosto = await this.calcularTotalCostos(pedidoEncontrado);
+    factura.montoDescuento = pedidoEncontrado.tipoEnvio == TiposEnvios.RETIRO_LOCAL ? factura.totalVenta * 0.1 : 0; //Calculamos el 10% en caso de que sea retirar por local, sino es simplemente 0.
+    this.cambiarEstadoPedido(pedidoEncontrado, estado);
+    await getRepository(Factura).save(factura); //Y Guardamos el resto de los atributos de la misma factura.
+  }
+
+  async cambiarEstadoPedido(pedido: Pedido, estado: EstadosPedido) {
+    switch (estado) {
+      case EstadosPedido.APROBADO:
+        pedido.estado = await getRepository(EstadoPedido).findOne({
+          where: { nombre: EstadosPedido.APROBADO },
+        });
+        break;
+      case EstadosPedido.TERMINADO:
+        pedido.estado = await getRepository(EstadoPedido).findOne({
+          where: { nombre: EstadosPedido.TERMINADO },
+        });
+        break;
+      case EstadosPedido.EN_DELIVERY:
+        pedido.estado = await getRepository(EstadoPedido).findOne({
+          where: { nombre: EstadosPedido.EN_DELIVERY },
+        });
+        break;
+      case EstadosPedido.FACTURADO:
+        pedido.estado = await getRepository(EstadoPedido).findOne({
+          where: { nombre: EstadosPedido.FACTURADO },
+        });
+        break;
+      case EstadosPedido.RECHAZADO:
+        pedido.estado = await getRepository(EstadoPedido).findOne({
+          where: { nombre: EstadosPedido.RECHAZADO },
+        });
+        break;
+      default:
+    }
+    await getRepository(Pedido).save(pedido);
+  }
+
+  async obtenerPedidos(estado: EstadosPedido) {
+    const pedidos = await getRepository(Pedido)
+      .createQueryBuilder('pedido')
+      .leftJoinAndSelect('pedido.estado', 'estado')
+      .where('estado.nombre = :nombre', { nombre: estado })
+      .getMany();
+    return pedidos;
+  }
+
+  async obtenerNroTarjeta(pedido: Pedido) {
+    const datosMercadoPago = await getRepository(MercadoPagoDatos).findOne({ where: { pedido } });
+    if (!datosMercadoPago) {
+      return '';
+    }
+    return datosMercadoPago?.nroTarjeta;
+  }
+
+  async calcularTotalVentas(pedido: Pedido, factura: Factura) {
+    const pedidosDetalle = await getRepository(DetallePedido).find({ where: { pedido } });
+    if (pedidosDetalle.length <= 0) {
+      return 0;
+    }
+    let total = 0;
+    await Promise.all(
+      pedidosDetalle.map(async (detalle) => {
+        //Por cada detallePedido, se crea un detalleFactura
+        const detalleFactura = new DetalleFactura();
+        detalleFactura.cantidad = detalle.cantidad;
+        detalleFactura.subtotal = detalle.subtotal;
+        if (detalle.articulo) {
+          detalleFactura.articulo = detalle.articulo;
+        }
+        if (detalle.articuloManufacturado) {
+          detalleFactura.articuloManufacturado = detalle.articuloManufacturado;
+        }
+        detalleFactura.factura = factura;
+        await getRepository(DetalleFactura).save(detalleFactura);
+        total = total + detalle.subtotal; // Vamos sumando los subtotales al total para devolver el total completo.
+      })
+    );
+    return total;
+  }
+
+  async calcularTotalCostos(pedido: Pedido) {
+    const pedidosDetalle = await getRepository(DetallePedido).find({ where: { pedido } });
+    if (pedidosDetalle.length <= 0) {
+      return 0;
+    }
+    let total = 0;
+    await Promise.all(
+      pedidosDetalle.map(async (detalle) => {
+        if (detalle.articulo) {
+          const costo = detalle.articulo?.precioCompra || 0;
+          total = total + costo;
+        }
+        if (detalle.articuloManufacturado) {
+          const articuloManufacturadoDetalles = await getRepository(ArticuloManufacturadoDetalle).find({
+            where: { articuloManufacturado: detalle.articuloManufacturado },
+          });
+          articuloManufacturadoDetalles.forEach((detalle: any) => {
+            const costo = detalle.articuloInsumo?.precioCompra || 0;
+            total = total + costo;
+          });
+        }
+      })
+    );
+    return total;
   }
 }
 

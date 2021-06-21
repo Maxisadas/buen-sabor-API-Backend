@@ -1,7 +1,6 @@
 import { createConnection } from 'typeorm';
 import dotenv from 'dotenv';
 import carga_inicial_datos from '../scripts';
-import mercadoPago from '../services/mercadoPago';
 
 dotenv.config();
 
@@ -15,7 +14,7 @@ const getConnection = async () => {
     database: process.env.DB_DATABASE,
     entities: ['src/entity/**/*.ts'],
     synchronize: true,
-    logger: 'debug',
+    logging: true,
   });
   console.log('Database ON');
   // init script de carga.
