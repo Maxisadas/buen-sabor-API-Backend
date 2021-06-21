@@ -1,6 +1,7 @@
 import { createConnection } from 'typeorm';
 import dotenv from 'dotenv';
 import carga_inicial_datos from '../scripts';
+import mercadoPago from '../services/mercadoPago';
 
 dotenv.config();
 

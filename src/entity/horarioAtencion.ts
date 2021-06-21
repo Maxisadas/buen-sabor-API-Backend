@@ -4,13 +4,13 @@ import { Configuracion } from './configuracion';
 @Entity()
 export class HorarioAtencion {
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
   @Column()
   dias: string; // VALORES ENTRE_SEMANA O FINES_SEMANA
   @Column()
-  horaApertura: string;
+  horaApertura: number;
   @Column()
-  horaCierre: string;
-  @ManyToOne(() => Configuracion, (configuracion) => configuracion.horarios, { cascade: true })
-  configuracion: Configuracion;
+  horaCierre: number;
+  @ManyToOne(() => Configuracion, (configuracion) => configuracion.horarios)
+  configuracion?: Configuracion;
 }

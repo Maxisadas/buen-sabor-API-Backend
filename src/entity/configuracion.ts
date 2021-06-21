@@ -11,6 +11,6 @@ export class Configuracion {
   emailEmpresa: string;
   @Column({ nullable: true, default: null })
   tokenMercadoPago: string;
-  @OneToMany(() => HorarioAtencion, (horarios) => horarios.configuracion, { eager: true })
+  @OneToMany(() => HorarioAtencion, (horarios) => horarios.configuracion, { eager: true, cascade: true })
   horarios: HorarioAtencion[];
 }

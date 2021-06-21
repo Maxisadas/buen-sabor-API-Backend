@@ -1,5 +1,5 @@
-const enum TiposEnvios{
-    RETIRO_LOCAL = 'RETIRLO_LOCAL',
-    DELIVERY = 'DELIVERY'
+const enum TiposEnvios {
+  RETIRO_LOCAL = 'RETIRO_LOCAL',
+  DELIVERY = 'DELIVERY',
 }
 export default TiposEnvios;

@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { Cliente } from './cliente';
 import { DetallePedido } from './detalle-pedido';
 import { EstadoPedido } from './estadoPedido';
+import { MercadoPagoDatos } from './mercadoPagoDatos';
 @Entity()
 export class Pedido {
   @PrimaryGeneratedColumn()
@@ -18,6 +19,8 @@ export class Pedido {
   detallePedidos: DetallePedido[];
   @ManyToOne(() => Cliente, (cliente) => cliente.pedidos)
   cliente?: Cliente | undefined;
-  @ManyToOne(() => EstadoPedido, (estadoPedido) => estadoPedido.pedidos,{eager:true,cascade:true})
+  @ManyToOne(() => EstadoPedido, (estadoPedido) => estadoPedido.pedidos, { eager: true, cascade: true })
   estado?: EstadoPedido | undefined;
+  @OneToMany(() => MercadoPagoDatos, (mercadoPagoDatos) => mercadoPagoDatos.pedido)
+  mercadoPagoDatos: MercadoPagoDatos[];
 }

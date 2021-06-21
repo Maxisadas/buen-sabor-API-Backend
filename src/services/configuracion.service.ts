@@ -1,6 +1,5 @@
 import { getRepository } from 'typeorm';
 import { Configuracion } from '../entity/configuracion';
-import { HorarioAtencion } from '../entity/horarioAtencion';
 
 class ConfiguracionService {
   async saveConfig(config: any) {
